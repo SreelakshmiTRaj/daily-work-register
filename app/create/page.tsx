@@ -8,54 +8,59 @@ type FormType = {
 };
 
 export default function CreatePage() {
+  // ✅ ALL columns (exact match)
+  const columns = [
+    "Date",
+    "Tools",
+    "Quantity",
+    "Materials",
+    "Quantity.1",
+    "Name of Work Done",
+    "Employee",
+    "Wages",
+    "Working Hours",
+    "Income",
+    "Payments",
+    "Room Rent",
+    "Breakfast",
+    "Lunch",
+    "Evening Tea",
+    "Dinner",
+    "Drinking Water",
+    "Other Food",
+    "Transportation",
+    "Bus Fare",
+    "Auto Fare",
+    "Petrol",
+    "Material Name",
+    "Amount",
+    "Date of Visit",
+    "Remarks",
+  ];
+
+  // ✅ Create empty form dynamically
+  const createEmptyForm = (): FormType => {
+    const obj: FormType = {};
+    columns.forEach((col) => {
+      obj[col] = "";
+    });
+    return obj;
+  };
+
   const [fileName, setFileName] = useState<string>("");
   const [rows, setRows] = useState<FormType[]>([]);
+  const [form, setForm] = useState<FormType>(createEmptyForm());
 
-  const [form, setForm] = useState<FormType>({
-    Date: "",
-    Tools: "",
-    Quantity: "",
-    Materials: "",
-    "Quantity.1": "",
-    "Name of Work Done": "",
-    Employee: "",
-    Wages: "",
-    "Working Hours": "",
-    Income: "",
-    Payments: "",
-    "Room Rent": "",
-    Breakfast: "",
-    Lunch: "",
-    "Evening Tea": "",
-    Dinner: "",
-    "Drinking Water": "",
-    "Other Food": "",
-    Transportation: "",
-    "Bus Fare": "",
-    "Auto Fare": "",
-    Petrol: "",
-    "Material Name": "",
-    Amount: "",
-    "Date of Visit": "",
-    Remarks: ""
-  });
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  // ✅ Handle input change
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // ✅ Add entry (fixes reference bug)
   const addRow = () => {
-    setRows([...rows, form]);
-
-    // Reset form after adding
-    setForm(
-      Object.keys(form).reduce((acc, key) => {
-        acc[key] = "";
-        return acc;
-      }, {} as FormType)
-    );
+    setRows([...rows, { ...form }]);
+    setForm(createEmptyForm());
+    alert("Entry Added");
   };
 
   return (
@@ -70,13 +75,23 @@ export default function CreatePage() {
         onChange={(e) => setFileName(e.target.value)}
       />
 
-      {/* Example Fields (we'll expand UI later) */}
+      {/* ALL Fields */}
       <div className="grid grid-cols-2 gap-4">
-        <input name="Date" placeholder="Date" onChange={handleChange} className="border p-2" />
-        <input name="Tools" placeholder="Tools" onChange={handleChange} className="border p-2" />
-        <input name="Quantity" placeholder="Quantity" onChange={handleChange} className="border p-2" />
-        <input name="Materials" placeholder="Materials" onChange={handleChange} className="border p-2" />
-        <input name="Quantity.1" placeholder="Quantity (Materials)" onChange={handleChange} className="border p-2" />
+        {columns.map((col) => {
+          const isDateField = col === "Date" || col === "Date of Visit";
+
+          return (
+            <input
+              key={col}
+              name={col}
+              type={isDateField ? "date" : "text"}
+              placeholder={col}
+              value={form[col]}
+              onChange={handleChange}
+              className="border p-2"
+            />
+          );
+        })}
       </div>
 
       {/* Buttons */}
